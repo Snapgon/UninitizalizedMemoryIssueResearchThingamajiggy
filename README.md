@@ -1,1 +1,36 @@
 # UninitizalizedMemoryIssueResearchThingamajiggy
+
+- C doesn’t have safeguards against accessing memory+can access memory despite it not being allocated by the current memory.
+  - Why does C do this?
+  - Cause it wants to be low-level and give programmers more freedom.
+- Uninitialized memory is what we have been referring to as garbage values.
+- We can read from it, causing unintended behavior!
+- Virtual Memory helps to stop programs from accessing memory from other programs.
+  - Virtual memory works through pages and page tables, which map them to actual memory addresses.
+  - The Memory Management Unit translates these virtual addresses to physical addresses.
+  - Virtual memory is individual to each process.
+  - Besides protecting data, it can also be used to share data between processes.
+- Which is why, in theory, the OS should be able to protect from uninitialized memory grabbing data from other processes.
+- Uninitialized memory can still potentially leak info, though!
+- If you don’t fully initialize memory and accidentally send uninitialized memory.
+- Examples:
+  - Cloudbleed
+    - Was only majorly in effect for around 5 days.
+    - They used a parser to read HTML requests and had a pointer to the parsed HTML.
+    - The parser was able to go past the end of a read buffer due to improper checking of the end of the buffer.
+    - Thus, private parts of the requests were being sent in public requests, and we’re exposed.
+  - Linux Bluetooth Vulnerability
+    - Was within the linux kernel itself.
+    - Allowed attackers within BLUETOOTH RANGE to access private information.
+    - By manipulating checks, attackers were able to gain access to an uninitialized variable.
+    - Sent an extremely large buffer over, causing a stack overflow.
+- Potential Protections that the Linux Kernel used
+  - KASLR
+    - The kernel picks a random base address to make it harder to find memory addresses and calculate offsets from them.
+  - Stack Canaries
+    - Values that are checked to see if they are overwritten.
+    - Helps to ensure no overwrites of memory that shouldn’t be touched.
+- Preventative measures for issues!
+  - Use calloc to initialize heap variables and initialize all stack   variables before use.
+  - Use valgrind to check for issues.
+  - Make sure the outputs for your program are all thoroughly checked and formatted so no data is leaked.
